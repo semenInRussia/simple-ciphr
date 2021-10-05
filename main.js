@@ -1,43 +1,84 @@
-let strForEncode = 'Сколько уоашуаугшраурашуашурашру'
-
 let alphabet = [
-	'abcde',
-	'fghik',
-	'lmnop',
-	'qrstu',
-	'vwxyz',
-	
-	'йцук',
-	"енгшщ",
-	"зхъфы",
-	"ваапр",
-	"олджэ",
-	"ячсми",
-	"тьбю",
-	
-    '!,@#$',
-    '%^&*(',
-    ')-_=+\\',
-    '12345',
-    '67890',
-    '`~     ',
-    '/,;:',
-    '?<>'
+  ['a', '.-'],
+  ['b', '-...'],
+  ['c', '-.-.'],
+  ['d', '-..'],
+  ['e', '.'],
+  ['f', '..-.'],
+  ['g', '--.'],
+  ['h', '....'],
+  ['i', '..'],
+  ['j', '.---'],
+  ['k', '-.-'],
+  ['l', '.-..'],
+  ['m', '--'],
+  ['n', '-.'],
+  ['o', '---'],
+  ['p', '.--.'],
+  ['q', '--.-'],
+  ['r', '.-.'],
+  ['s', '...'],
+  ['t', '-'],
+  ['u', '..-'],
+  ['v', '...-'],
+  ['w', '.--'],
+  ['x', '-..-'],
+  ['y', '-.--'],
+  ['z', '--..']
 ]
 
-let result = ''
 
-strForEncode = strForEncode.toLowerCase()
-let strForEncodeAsArray = Array.from(strForEncode)
+function encodeString(string) {
+  let result = ''
+  
+  for (let symbol of string) {
+    let encodedString = ''
 
-for (let charForEncode of strForEncodeAsArray) {
-    let alphabetRow = alphabet.filter(row => row.includes(charForEncode))[0]
-    let alphabetRowIndex = alphabet.indexOf(alphabetRow)
-    let charInRowIndex = alphabetRow.indexOf(charForEncode)
+    for (let currentSymbolAndValue of alphabet) {
+      let currentSymbol = currentSymbolAndValue[0]    
+      let valueOfCurrentSymbol = currentSymbolAndValue[1]
+
+      if (currentSymbol == symbol) {
+        encodedString = valueOfCurrentSymbol
+      }
+    }
     
-    let encodedChar = alphabetRowIndex.toString() + charInRowIndex.toString()
-    
-    result += encodedChar
+    result += encodedString
+    result += ' '
+  }
+  
+  return result.slice(0, -1)
 }
 
-console.log(result)
+function decodeString(string) {
+	let result = ''
+  
+  string = string.toLowerCase()
+  
+  
+
+	let valuesOfSymbols = string.split(' ')
+
+	for (let encodedSymbol of valuesOfSymbols) {
+		let decodedSymbol = ''
+
+		for (let currentValueAndSymbol of alphabet) {
+			let currentSymbol = currentValueAndSymbol[0]
+			let valueOfCurrentSymbol = currentValueAndSymbol[1]
+
+			if (encodedSymbol == valueOfCurrentSymbol) {
+				decodedSymbol = currentSymbol
+        break
+			}
+		}
+
+		result += decodedSymbol
+	}
+  
+  console.log(result)
+  
+  return result
+}
+
+let encodedString = (encodeString('Hello!'))
+console.log(decodeString(encodedString))
