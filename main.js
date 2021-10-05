@@ -30,6 +30,7 @@ let alphabet = [
 
 function encodeString(string) {
   let result = ''
+  string = string.toLowerCase()
   
   for (let symbol of string) {
     let encodedString = ''
@@ -55,6 +56,8 @@ function decodeString(string) {
   
   string = string.toLowerCase()
   
+  console.log(string)
+  
   
 
 	let valuesOfSymbols = string.split(' ')
@@ -79,6 +82,3 @@ function decodeString(string) {
   
   return result
 }
-
-let encodedString = (encodeString('Hello!'))
-console.log(decodeString(encodedString))
