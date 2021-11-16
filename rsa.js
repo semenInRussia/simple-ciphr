@@ -1,8 +1,3 @@
-let q;
-let p;
-let d;
-let n;
-
 function isPrime (num) {
    for (let i = 3; i <= Math.sqrt(num); i++) {
     if ((num % i) == 0) {
@@ -12,23 +7,14 @@ function isPrime (num) {
   return true;
 }
 
-function updateQandPandN (initialQ, initialP) {
-  q = initialQ
-  p = initialP
-
-  console.log(`q ${q}`)
-  console.log(`p ${p}`)
+function generatePrimeNumber(initialVal) {
+  let res = initialVal;
   
-  while (!isPrime(q)) {
-    q++;
+  while (!isPrime(res)) {
+    res += 1;
   }
-
-  while (!isPrime(p)) {
-    p++;
-  }
-
-  n = q * p
-  console.log(`n ${n}`)
+  
+  return res
 }
 
 function gcd(a,b) {
@@ -48,47 +34,72 @@ function gcd(a,b) {
     }
 }
 
-function updateD(initialD) {
-    d = initialD;
+function generateP(initVal) {
+  return generatePrimeNumber(initVal)
+}
 
-    while (!gcd(d, (p-1)*(q-1))) {
-        d++;
+function generateQ(initVal) {
+  return generatePrimeNumber(initVal)
+}
+
+function generateN(p, q) {
+  return p * q;
+}
+
+function generateD(initVal, p, q) {
+  let res = initVal;
+  
+  while (!(gcd((p-1) * (q -1), res) == 1)) {
+    res ++;
+  }
+  
+  return res
+}
+
+function generateE(initVal, d, p, q) {
+  let e = initVal;
+  
+  while ((e*d) % ((p-1)*(q-1))!=1) {
+    e ++;
+  }
+  
+  return e
+}
+
+function generateAll (initialQ, initialP, initialE, initialD) {
+    let p = generateP(initialP);
+    let q = generateQ(initialQ);
+    let d = generateD(initialD, p, q);
+    let e = generateE(initialE, d, p, q);
+    
+    return {
+      p,
+      q,
+      d,
+      e
     }
-
-    console.log(`d ${d}`)
-
 }
 
-function updateE(initialE) {
-    e = initialE
-
-    while ((e*d) % ((p-1)*(q-1)) != 1) {
-        e++
-    }
-
-    console.log(`e ${e}`)
-}
-
-function updateInfo (initialQ, initialP, initialeE) {
-    updateQandPandN(initialQ, initialP)
-    updateD(initialD)
-    updateE(initialeE)
-}
-
-function encode (text, cuurentE, currentN) {
+function encode (text, e, n) {
     const textAsNums = strToNums(text)
 
-    return textAsNums.map(i => ((i ^ currentE) % currentN))
+    let nums = textAsNums.map(i => ((i ^ e) % n))
+    
+    return numsToStr(nums)
 }
 
 function strToNums (str) {
-    let strIndexes = allIndexesOfString(str)
+    let strIndexes = allIndexesOf(str)
 
     return strIndexes.map(i => str.charCodeAt(i))
 }
 
-function allIndexesOfString (str) {
-    return range(0, str.length - 1)
+function numsToStr (nums) {
+  return nums.map(String.fromCharCode)
+}
+
+function allIndexesOf (arr) {
+    return range(0, arr.length - 1)
 }
 
 function range(start, end) {
@@ -102,4 +113,17 @@ function decode (text, currentD, currentN) {
     return textAsNums.map(i => (i ^ currentD) % currentN)
 }
 
-updateInfo()
+
+
+let p = generateP(2)
+let q = generateQ(10)
+let n = generateN(p, q)
+let d = generateD(1, p, q)
+let e = generateE(4000, d, p, q)
+
+let str = "Nikita!"
+let encoded = encode(str, e, n)
+// let decoded = decode(encoded, d, n)
+
+console.log(encoded)
+
