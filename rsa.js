@@ -1,129 +1,207 @@
-function isPrime (num) {
-   for (let i = 3; i <= Math.sqrt(num); i++) {
-    if ((num % i) == 0) {
-      return false;
-    }
-  }
-  return true;
+const amountOfCharsBeforeLetterInASCII = 96;
+const INIT_VAL_OF_GENERATE_KEYS_LIMIT = 400;
+
+
+
+function generateRandomKeys() {
+    let randomState = randomBefore(INIT_VAL_OF_GENERATE_KEYS_LIMIT);
+    console.log(randomState);
+
+    return generateKeys(randomState);
 }
 
-function generatePrimeNumber(initialVal) {
-  let res = initialVal;
-  
-  while (!isPrime(res)) {
-    res += 1;
-  }
-  
-  return res
+
+function generateKeys(state) {
+    const p = generateP(state);
+    const q = generateQ(state + 20);
+    const n = generateN(p, q);
+    const d = generateD(100, p, q);
+    const e = generateE(100, d, p, q);
+
+    return {
+        encryptKey: [e, n],
+        decryptKey: [d, n]
+    };
 }
+
+
+function generateP(initVal) {
+    return generatePrimeNumber(initVal);
+}
+
+
+function generateQ(initVal) {
+    return generatePrimeNumber(initVal);
+}
+
+
+function generateN(p, q) {
+    return p * q;
+}
+
+
+function generatePrimeNumber(initialVal) {
+    let res = toEven(initialVal);
+
+    while (!isPrime(res)) {
+        res += 2; // This is ignore odd numbers
+    }
+
+    return res;
+}
+
+
+function toEven(num) {
+    if (num % 2 == 0) {
+        return num + 1;
+    }
+
+    else {
+        return num;
+    }
+}
+
+
+function isPrime (num) {
+    for (let i = 3; i <= Math.sqrt(num); i++) {
+        if ((num % i) == 0) {
+            return false;
+        }
+    }
+    return true;
+}
+
+
+function generateD(initVal, p, q) {
+    let res = initVal;
+
+    while (gcd((p-1) * (q -1), res) != 1) {
+        res++;
+    }
+
+    return res;
+}
+
 
 function gcd(a,b) {
     a = Math.abs(a);
     b = Math.abs(b);
-    if (b > a) {var temp = a; a = b; b = temp;}
+    if (b > a) {
+        const temp = a;
+        a = b; b = temp;
+    }
     while (true) {
         if (b == 0) {
-          return a;
+            return a;
         }
         a %= b;
-
         if (a == 0) {
-          return b;
+            return b;
         }
         b %= a;
     }
 }
 
-function generateP(initVal) {
-  return generatePrimeNumber(initVal)
-}
-
-function generateQ(initVal) {
-  return generatePrimeNumber(initVal)
-}
-
-function generateN(p, q) {
-  return p * q;
-}
-
-function generateD(initVal, p, q) {
-  let res = initVal;
-  
-  while (!(gcd((p-1) * (q -1), res) == 1)) {
-    res ++;
-  }
-  
-  return res
-}
 
 function generateE(initVal, d, p, q) {
-  let e = initVal;
-  
-  while ((e*d) % ((p-1)*(q-1))!=1) {
-    e ++;
-  }
-  
-  return e
-}
+    let e = initVal;
 
-function generateAll (initialQ, initialP, initialE, initialD) {
-    let p = generateP(initialP);
-    let q = generateQ(initialQ);
-    let d = generateD(initialD, p, q);
-    let e = generateE(initialE, d, p, q);
-    
-    return {
-      p,
-      q,
-      d,
-      e
+    while ((e*d) % ((p-1)*(q-1))!=1) {
+        e++;
     }
+
+    return e;
 }
 
-function encode (text, e, n) {
-    const textAsNums = strToNums(text)
 
-    let nums = textAsNums.map(i => ((i ^ e) % n))
-    
-    return numsToStr(nums)
+function randomBefore(n) {
+    return Math.floor(Math.random() * n);
 }
+
+
+function encode (text, encryptKey) {
+    const textAsNums = strToNums(text);
+    const encodedNums = encodeNums(textAsNums, encryptKey);
+
+    return bigIntsToStr(encodedNums);
+}
+
+
+function encodeNums(nums, encryptKey) {
+    const [e, n] = encryptKey;
+
+    console.log(e);
+    console.log(n);
+
+    return nums.map(i => bigIntsMod(bigIntsPow(i, e), n));
+}
+
 
 function strToNums (str) {
-    let strIndexes = allIndexesOf(str)
+    const strIndexes = allIndexesOf(str);
 
-    return strIndexes.map(i => str.charCodeAt(i))
+    return strIndexes.map(i => str.charCodeAt(i));
 }
 
-function numsToStr (nums) {
-  return nums.map(String.fromCharCode)
-}
 
 function allIndexesOf (arr) {
-    return range(0, arr.length - 1)
+    return range(0, arr.length - 1);
 }
+
 
 function range(start, end) {
     return [...Array(end - start + 1).keys()]
-        .map(num => num + start)
-}
-
-function decode (text, currentD, currentN) {
-    let textAsNums = strToNums(text);
-
-    return textAsNums.map(i => (i ^ currentD) % currentN)
+        .map(num => num + start);
 }
 
 
+function bigIntsMod(a, b) {
+    return BigInt(a) % BigInt(b);
+}
 
-let p = generateP(2)
-let q = generateQ(10)
-let n = generateN(p, q)
-let d = generateD(1, p, q)
-let e = generateE(4000, d, p, q)
 
-let str = "Nikita!"
-let encoded = encode(str, e, n)
-// let decoded = decode(encoded, d, n)
+function bigIntsPow(a, b) {
+    return BigInt(a) ** BigInt(b);
+}
 
-console.log(encoded)
 
+function bigIntsToStr(bigInts) {
+    const nums = bigInts.map(Number);
+
+    return numsToStr(nums);
+}
+
+
+function numsToStr (nums) {
+    return String.fromCharCode(...nums);
+}
+
+
+function decode (text, decryptKey) {
+    const encodedNums = strToNums(text);
+    const decodedNums = decodeNums(encodedNums, decryptKey);
+
+    return bigIntsToStr(decodedNums);
+}
+
+
+function decodeNums(nums, decryptKey) {
+    const [d, n] = decryptKey;
+
+    return nums.map(
+        i => bigIntsMod(bigIntsPow(i, d), n)
+    );
+}
+
+
+const keys = generateRandomKeys();
+
+const str = "abc";
+
+const encoded = encode(str, keys.encryptKey);
+const decoded = decode(encoded, keys.decryptKey);
+
+console.log(keys);
+console.log(encoded);
+
+console.log("OK");
