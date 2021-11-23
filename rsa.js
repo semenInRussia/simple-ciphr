@@ -1,11 +1,9 @@
 const amountOfCharsBeforeLetterInASCII = 96;
-const INIT_VAL_OF_GENERATE_KEYS_LIMIT = 400;
-
+const INIT_VAL_OF_GENERATE_KEYS_LIMIT = 100;
 
 
 function generateRandomKeys() {
     let randomState = randomBefore(INIT_VAL_OF_GENERATE_KEYS_LIMIT);
-    console.log(randomState);
 
     return generateKeys(randomState);
 }
@@ -130,9 +128,6 @@ function encode (text, encryptKey) {
 function encodeNums(nums, encryptKey) {
     const [e, n] = encryptKey;
 
-    console.log(e);
-    console.log(n);
-
     return nums.map(i => bigIntsMod(bigIntsPow(i, e), n));
 }
 
@@ -173,7 +168,7 @@ function bigIntsToStr(bigInts) {
 
 
 function numsToStr (nums) {
-    return String.fromCharCode(...nums);
+  return String.fromCharCode(...nums);
 }
 
 
@@ -196,12 +191,13 @@ function decodeNums(nums, decryptKey) {
 
 const keys = generateRandomKeys();
 
-const str = "abc";
+const str = "nikita!";
 
 const encoded = encode(str, keys.encryptKey);
 const decoded = decode(encoded, keys.decryptKey);
 
-console.log(keys);
-console.log(encoded);
+console.log("private = ", keys.decryptKey);
+console.log("public  =", keys.encryptKey)
 
-console.log("OK");
+console.log(encoded);
+console.log(decoded);
